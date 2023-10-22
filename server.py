@@ -1,46 +1,63 @@
 import logging
 import os
 import typing
+from fastapi import FastAPI, Request, HTTPException, status
+from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
+import newrelic.agent
+from getCustomAttributes import getCustomAttributes, getCustomAttributesEnd
 
-from flask import Flask
-from flask import request
+app = FastAPI(title="Battlesnake")
+newrelic.agent.initialize('newrelic.ini')
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 def run_server(handlers: typing.Dict):
-    app = Flask("Battlesnake")
 
     @app.get("/")
-    def on_info():
+    async def on_info():
         return handlers["info"]()
 
     @app.post("/start")
-    def on_start():
-        game_state = request.get_json()
+    async def on_start(request: Request):
+        game_state = await request.json()
         handlers["start"](game_state)
         return "ok"
 
     @app.post("/move")
-    def on_move():
-        game_state = request.get_json()
+    async def on_move(request: Request):
+        game_state = await request.json()
+        attributes = getCustomAttributes(game_state)
+        for key, value in attributes.items():
+            newrelic.agent.add_custom_parameter(key, value)
         return handlers["move"](game_state)
 
     @app.post("/end")
-    def on_end():
-        game_state = request.get_json()
+    async def on_end(request: Request):
+        game_state = await request.json()
+        attributes = getCustomAttributes(game_state)
+        for key, value in attributes.items():
+            newrelic.agent.add_custom_parameter(key, value)
         handlers["end"](game_state)
         return "ok"
 
-    @app.after_request
-    def identify_server(response):
-        response.headers.set(
-            "server", "battlesnake/github/starter-snake-python"
-        )
+    @app.middleware("http")
+    async def identify_server(request: Request, call_next):
+        response = await call_next(request)
+        response.headers["server"] = "battlesnake/github/starter-snake-python"
         return response
 
     host = "0.0.0.0"
     port = int(os.environ.get("PORT", "8000"))
 
-    logging.getLogger("werkzeug").setLevel(logging.ERROR)
+    logging.getLogger("uvicorn.access").setLevel(logging.ERROR)
 
     print(f"\nRunning Battlesnake at http://{host}:{port}")
-    app.run(host=host, port=port)
+    import uvicorn
+    uvicorn.run(app, host=host, port=port)
