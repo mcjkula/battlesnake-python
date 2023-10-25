@@ -10,7 +10,6 @@ from getCustomAttributes import getCustomAttributes, getCustomAttributesEnd
 from pkg_resources import PkgResourcesDeprecationWarning
 
 warnings.simplefilter("ignore", category=PkgResourcesDeprecationWarning)
-logging.getLogger("newrelic.core.agent").setLevel(logging.WARNING)
 
 app = FastAPI(title="Battlesnake")
 newrelic.agent.initialize('newrelic.ini')
