@@ -5,3 +5,4 @@ __pycache__/
 newrelic.ini
 /old_files
 memray*
+/docker
