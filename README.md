@@ -1,5 +1,3 @@
-# Bot for Battlesnake
-
 ## Features
 - A*-Algorithm (Pathfinding)
 - Collision-Detection
