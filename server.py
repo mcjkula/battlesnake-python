@@ -1,4 +1,5 @@
 import logging
+import warnings
 import os
 import typing
 from fastapi import FastAPI, Request, HTTPException, status
@@ -6,6 +7,10 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 import newrelic.agent
 from getCustomAttributes import getCustomAttributes, getCustomAttributesEnd
+from pkg_resources import PkgResourcesDeprecationWarning
+
+warnings.simplefilter("ignore", category=PkgResourcesDeprecationWarning)
+logging.getLogger("newrelic.core.agent").setLevel(logging.WARNING)
 
 app = FastAPI(title="Battlesnake")
 newrelic.agent.initialize('newrelic.ini')
@@ -46,6 +51,14 @@ def run_server(handlers: typing.Dict):
             newrelic.agent.add_custom_parameter(key, value)
         handlers["end"](game_state)
         return "ok"
+
+    @app.get("/ping")
+    async def on_ping():
+        return "ok"
+
+    @app.head("/ping")
+    async def on_head():
+        return JSONResponse(content=None, status_code=200)
 
     @app.middleware("http")
     async def identify_server(request: Request, call_next):

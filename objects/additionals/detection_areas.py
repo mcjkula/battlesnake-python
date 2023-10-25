@@ -35,6 +35,9 @@ class DetectionAreas(Enum):
 
     @classmethod
     def get_area_by_direction(cls, name):
+        """
+        TODO: Docstring
+        """
         for a in cls:
             if a.name == name:
                 return a.value

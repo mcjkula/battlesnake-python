@@ -1,2 +1,4 @@
 fastapi
 uvicorn
+dataset
+psycopg2-binary

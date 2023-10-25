@@ -17,6 +17,9 @@ class Direction(Enum):
 
     @classmethod
     def get_name_by_direction(cls, value):
+        """"
+        TODO: Docstring
+        """
         for d in cls:
             if d.coords == value:
                 return d.name

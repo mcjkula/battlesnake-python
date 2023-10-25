@@ -14,10 +14,6 @@ class Snake:
 
     @property
     def head(self) -> Tuple[int, int]:
-        """
-        Get the Coordinates of the Head.
-        Returns a Tuple with them accordingly.
-        """
         return (self._head["x"], self._head["y"])
 
     @property
@@ -32,9 +28,6 @@ class Snake:
 
     @property
     def length(self) -> int:
-        """
-        TODO: Docstring
-        """
         return self._length
 
     @property
@@ -51,9 +44,6 @@ class Snake:
 
     @property
     def detection_area(self) -> Dict:
-        """
-        TODO: Docstring
-        """
         direction = Direction.get_name_by_direction(self.direction)
         return DetectionAreas.get_area_by_direction(direction)
 
@@ -65,17 +55,17 @@ class Snake:
         return (self.head[0] + move[0], self.head[1] + move[1])
 
     def nearest_food(self, foods) -> Tuple[int, int]:
-        random_food = random.choice(foods)
-        nearest_food = (random_food["x"], random_food["y"])
-        skip = True
+        """
+        TODO: Docstring
+        """
+        nearest_food = None
+        min_distance = float('inf')
 
         for f in foods:
-            distance = (abs(self.head[0] - f["x"]), abs(self.head[1] - f["y"]))
+            distance = abs(self.head[0] - f["x"]) + abs(self.head[1] - f["y"])
 
-            if not skip:
-                if (distance[0] <= previous[0]) and (distance[1] <= previous[1]):
-                    nearest_food = (f["x"], f["y"])
+            if distance < min_distance:
+                min_distance = distance
+                nearest_food = (f["x"], f["y"])
 
-            skip = False
-            previous = (abs(self.head[0] - f["x"]), abs(self.head[1] - f["y"]))
         return nearest_food
