@@ -191,8 +191,8 @@ def info() -> Dict:
         "apiversion": "1",
         "author": "dessher",
         "color": "#a566d1",
-        "head": "",
-        "tail": "round-bum",
+        "head": "default",
+        "tail": "block-bum",
     }
 
 
